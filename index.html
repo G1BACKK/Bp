@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JALWA GAME</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #frame-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #website-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .fully-transparent {
+      opacity: 0;
+      background: transparent;
+      border: none;
+      color: transparent;
+      pointer-events: auto;
+      position: fixed;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    #first-button {
+      width: 80px;
+      height: 88px;
+      right: 20px;
+      bottom: 20px;
+    }
+
+    #second-button {
+      width: 120px;
+      height: 340px;
+      left: 110px;
+      top: 0;
+      display: none;
+      clip-path: polygon(
+        0% 0%, 100% 0%, 100% 20%, 80% 20%, 80% 30%, 100% 30%,
+        100% 100%, 0% 100%, 0% 67%, 20% 67%, 20% 55%, 0% 55%, 0% 0%
+      );
+    }
+
+    #third-button {
+      width: 150px;
+      height: 55px;
+      right: 20px;
+      bottom: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="frame-container">
+    <!-- We'll load the iframe dynamically via JavaScript -->
+    <iframe id="website-iframe"></iframe>
+  </div>
+
+  <button id="first-button" class="fully-transparent">Account</button>
+  <button id="second-button" class="fully-transparent">Deposit Info</button>
+  <button id="third-button" class="fully-transparent">₹</button>
+
+  <script>
+    // Configuration
+    const TARGET_URL = "https://www.jalwagame.win/#/register?invitationCode=57357202283";
+    const PROXY_URL = "https://cors-anywhere.herokuapp.com/";
+    const SCROLL_SPEED = 2; // pixels per interval
+    const SCROLL_INTERVAL = 50; // milliseconds
+
+    // DOM Elements
+    const firstButton = document.getElementById('first-button');
+    const secondButton = document.getElementById('second-button');
+    const thirdButton = document.getElementById('third-button');
+    const iframe = document.getElementById('website-iframe');
+
+    // 1. CORS Bypass Loading
+    async function loadIframeWithCorsBypass() {
+      try {
+        // Try to fetch via proxy first
+        const response = await fetch(PROXY_URL + TARGET_URL, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest' // Some proxies require this
+          }
+        });
+        
+        if (!response.ok) throw new Error("Proxy fetch failed");
+        
+        const html = await response.text();
+        
+        // Create a blob URL to bypass CORS restrictions
+        const blob = new Blob([html], {type: 'text/html'});
+        const blobUrl = URL.createObjectURL(blob);
+        iframe.src = blobUrl;
+        
+        return true;
+      } catch (error) {
+        console.error("CORS bypass failed, falling back to direct load:", error);
+        iframe.src = TARGET_URL;
+        return false;
+      }
+    }
+
+    // 2. Auto-Scroll Implementation
+    function startAutoScroll() {
+      let scrollInterval;
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      function tryScrolling() {
+        attempts++;
+        
+        try {
+          // Clear any existing interval
+          if (scrollInterval) clearInterval(scrollInterval);
+          
+          // Method 1: Direct scrolling (works if same-origin)
+          scrollInterval = setInterval(() => {
+            iframe.contentWindow.scrollBy(0, SCROLL_SPEED);
+          }, SCROLL_INTERVAL);
+          
+          return true;
+        } catch (error) {
+          // Method 2: Simulate keyboard events if direct access fails
+          if (attempts > maxAttempts/2) {
+            try {
+              const keyEvent = new KeyboardEvent('keydown', {
+                key: 'ArrowDown',
+                bubbles: true
+              });
+              scrollInterval = setInterval(() => {
+                iframe.contentWindow.document.dispatchEvent(keyEvent);
+              }, SCROLL_INTERVAL);
+              return true;
+            } catch (e) {
+              console.log("Keyboard simulation failed");
+            }
+          }
+          
+          if (attempts < maxAttempts) {
+            // Retry after short delay
+            setTimeout(tryScrolling, 500);
+          }
+          return false;
+        }
+      }
+
+      // Initial attempt
+      setTimeout(tryScrolling, 3000);
+    }
+
+    // 3. Original Button Functionality
+    firstButton.addEventListener('click', () => {
+      firstButton.style.display = 'none';
+      secondButton.style.display = 'flex';
+    });
+
+    secondButton.addEventListener('click', () => {
+      secondButton.style.display = 'none';
+      thirdButton.style.display = 'flex';
+    });
+
+    thirdButton.addEventListener('click', () => {
+      window.location.href = 'https://g1backk.github.io/Checking-/';
+    });
+
+    // 4. Initialize Everything
+    window.addEventListener('load', async () => {
+      // Load the iframe with CORS bypass
+      const corsSuccess = await loadIframeWithCorsBypass();
+      
+      // Start auto-scroll (will retry until successful)
+      startAutoScroll();
+      
+      // Fallback check
+      setTimeout(() => {
+        if (!corsSuccess) {
+          console.log("Using fallback scrolling methods");
+        }
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
