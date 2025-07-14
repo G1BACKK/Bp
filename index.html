@@ -3,113 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JALWA GAME</title>
+    <title>Ghost Scrolling Demo</title>
     <style>
-        html, body {
+        body {
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        #iframe-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #ccc;
+        }
+        #original-iframe {
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            border: none;
         }
-        #frame-container {
-            position: fixed;
+        #ghost-scroller {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2147483647;
+            opacity: 0.999;
+            mix-blend-mode: normal;
+            filter: blur(0.001px);
         }
-        #website-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        .controls {
+            margin-top: 20px;
         }
-        .fully-transparent {
-            opacity: 0;
-            background: transparent;
-            border: none;
-            color: transparent;
-            pointer-events: auto;
-            position: fixed;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        #first-button { width: 80px; height: 88px; right: 20px; bottom: 20px; }
-        #second-button { width: 120px; height: 340px; left: 110px; top: 0; display: none; }
-        #third-button { width: 150px; height: 55px; right: 20px; bottom: 20px; display: none; }
     </style>
 </head>
 <body>
-    <div id="frame-container">
-        <iframe id="website-iframe"></iframe>
+    <h1>Ghost Scrolling Technique</h1>
+    <div id="iframe-container">
+        <iframe id="original-iframe" src="https://example.com"></iframe>
+        <div id="ghost-scroller"></div>
+    </div>
+    <div class="controls">
+        <button id="start-btn">Start Ghost Scrolling</button>
+        <input type="range" id="speed-control" min="1" max="10" value="3">
     </div>
 
-    <button id="first-button" class="fully-transparent">Account</button>
-    <button id="second-button" class="fully-transparent">Deposit Info</button>
-    <button id="third-button" class="fully-transparent">₹</button>
-
-    <script>
-        // Configuration
-        const TARGET_URL = "https://www.jalwagame.win/#/register?invitationCode=57357202283";
-        const USE_PROXY = false; // Set to true if using the Node.js proxy
-        const PROXY_URL = "http://localhost:3000/proxy?url=";
-
-        // DOM Elements
-        const iframe = document.getElementById('website-iframe');
-        const firstButton = document.getElementById('first-button');
-        const secondButton = document.getElementById('second-button');
-        const thirdButton = document.getElementById('third-button');
-
-        // Load iframe with or without proxy
-        function loadIframe() {
-            if (USE_PROXY) {
-                iframe.src = PROXY_URL + encodeURIComponent(TARGET_URL);
-            } else {
-                iframe.src = TARGET_URL;
-                // Inject auto-scroll script after load
-                iframe.onload = () => {
-                    setTimeout(() => {
-                        try {
-                            const script = iframe.contentDocument.createElement('script');
-                            script.textContent = `
-                                let scrollPos = 0;
-                                setInterval(() => {
-                                    scrollPos += 2;
-                                    window.scrollTo(0, scrollPos);
-                                    if (scrollPos > 1000) scrollPos = 0;
-                                }, 50);
-                            `;
-                            iframe.contentDocument.body.appendChild(script);
-                        } catch (e) {
-                            console.log("Cross-origin blocking - using fallback");
-                        }
-                    }, 2000);
-                };
-            }
-        }
-
-        // Button functionality
-        firstButton.addEventListener('click', () => {
-            firstButton.style.display = 'none';
-            secondButton.style.display = 'flex';
-        });
-
-        secondButton.addEventListener('click', () => {
-            secondButton.style.display = 'none';
-            thirdButton.style.display = 'flex';
-        });
-
-        thirdButton.addEventListener('click', () => {
-            window.location.href = 'https://g1backk.github.io/Checking-/';
-        });
-
-        // Initialize
-        window.addEventListener('load', loadIframe);
-    </script>
+    <script src="ghost-scroll.js"></script>
 </body>
 </html>
